@@ -5,17 +5,7 @@ import { db } from './infra/drizzle.js';
 import { UserRepository } from './infra/repo/UserRepository.js';
 import { RatingCommand } from './commands/rating/RatingCommand.js';
 
-export const bot = new Telegraf(env.BOT_TOKEN, {
-  handlerTimeout: 0,
-});
-
-console.log('123 Bot starting...');
-
-bot.use((ctx, next) => {
-  console.log('USE:', ctx.update);
-
-  return next();
-});
+export const bot = new Telegraf(env.BOT_TOKEN);
 
 bot.hears(RatingCommand.TRIGGERS, async (ctx) => {
   console.log('Received update in HEARS:', ctx.update);
