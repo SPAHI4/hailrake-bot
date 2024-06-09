@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "node --watch --env-file=.env dist/app/bin/app.js",
     "start": "node dist/app/bin/app.js",
-    "build": "node --loader ts-node/esm scripts/build.ts",
+    "build": "tsc",
+    "build-aws": "node --loader ts-node/esm scripts/build.ts",
     "js": "node --watch --env-file=.env",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
@@ -63,10 +64,5 @@
     "postgres": "^3.4.4",
     "telegraf": "^4.16.3",
     "telegraf-ratelimit": "^2.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "node-fetch": "3.3.2"
-    }
   }
 }
