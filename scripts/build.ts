@@ -7,7 +7,7 @@ build({
   entryPoints: ['./app/bin/lambda.ts', './app/bin/lambda-migrate.ts'],
   bundle: true,
   platform: 'node',
-  target: 'node18',
+  target: 'node20',
   outdir: './build',
   // minify: true,
   format: 'esm',

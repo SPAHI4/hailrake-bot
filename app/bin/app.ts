@@ -1,13 +1,13 @@
 import { bot } from '../bot.js';
 
-process.once('SIGINT', () => {
-  bot.stop('SIGINT');
-});
-
-process.once('SIGTERM', () => {
-  bot.stop('SIGTERM');
-});
+// process.once('SIGINT', () => {
+//   bot.stop('SIGINT');
+// });
+//
+// process.once('SIGTERM', () => {
+//   bot.stop('SIGTERM');
+// });
 
 console.log('Bot starting...');
 
-void bot.launch();
+void bot.launch({ allowedUpdates: ['message', 'message_reaction'] });

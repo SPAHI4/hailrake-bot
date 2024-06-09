@@ -1,5 +1,8 @@
 export const RATING_REQUIRED_TO_VOTE = -20; // user can't vote if his rating is lower than this value
-export const RATING_COOLDOWN_MINUTES = 5; // user can't vote more often than this value
+export const RATING_COOLDOWN_MINUTES = 1; // user can't vote more often than this value
+
+export const RATING_CHANCE_BLADEMAIL = 0.3;
+export const RATING_CHANCE_VANGUARD = 0.3;
 
 // use 1 as a default value if rating is in normal range (0-10)
 export const RATING_AMOUNT_IF_IN_NORMAL_RANGE = 1;

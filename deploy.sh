@@ -2,6 +2,9 @@ pnpm build-aws
 
 cp package.json build/
 
+# copy assets dir recursively
+cp -r assets build/
+
 cd build
 
 zip -r ../lambda.zip *

@@ -2,6 +2,7 @@ import { pluralize as plural } from 'numeralize-ru';
 import { sample as rand } from 'lodash-es';
 
 import { formatNumbers as num } from '../../utils.js';
+import { Dictionary } from '../../Dictionary.js';
 
 interface VoteResultPlaceholders {
   oldRaterRating: number;
@@ -27,6 +28,12 @@ export const t = {
   votedNegative: (p: VoteResultPlaceholders) =>
     num`<i>${p.raterName}</i> (${p.oldRaterRating}) залил соляры <i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
 
+  votedNegativeBlademail: (p: VoteResultPlaceholders) =>
+    num`Blademail отразил минуса:
+
+<i>${p.raterName}</i>  (${p.oldRaterRating} → <b>${p.newRaterRating}</b>)
+<i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
+
   selfVoteErrorPositive: () => `найс трай, очередняра`,
   selfVoteErrorNegative: () => `Ты что, долбоеб? Нажмите на паузу, у вас долбоеб cам себе минусы ставит`,
-};
+} satisfies Dictionary;

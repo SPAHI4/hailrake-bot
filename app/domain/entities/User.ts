@@ -85,6 +85,10 @@ export class User implements Entity<UserSelect> {
     return this.username ?? [this.firstName, this.lastName].filter(Boolean).join(' ');
   }
 
+  get tgMention() {
+    return `<a href="mention:${this.id}">${this.displayName}</a>`;
+  }
+
   public setDataFromTelegramUser(tgUser: TelegramUser): void {
     this.username = tgUser.username ?? null;
     this.firstName = tgUser.first_name;

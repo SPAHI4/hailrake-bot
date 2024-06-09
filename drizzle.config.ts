@@ -1,16 +1,22 @@
+import fs from 'node:fs';
+
 import { defineConfig } from 'drizzle-kit';
 import 'dotenv/config';
 
+const schemaDir = './app/db';
+
+// issues with module resolution if it contains nested imports
+const files = fs
+  .readdirSync(schemaDir)
+  .filter((file) => file.endsWith('.ts') && file !== 'schema.ts')
+  .map((file) => `${schemaDir}/${file}`);
+
 export default defineConfig({
-  schema: './app/db/schema.ts',
+  schema: files,
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env['PG_URL']!,
-    // host: env.PG_HOST,
-    // user: process.env.DB_USER,
-    // password: process.env.DB_PASSWORD,
-    // database: process.env.DB_NAME,
   },
   verbose: true,
   strict: true,
