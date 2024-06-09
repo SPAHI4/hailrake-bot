@@ -27,8 +27,6 @@ export class RatingCommand {
   private handleCooldown(user: User): void {
     const timeDiffMinutes = differenceInMinutes(new Date(), user.votedAt);
 
-    console.log({ timeDiffMinutes, user, now: new Date() });
-
     if (timeDiffMinutes < RATING_COOLDOWN_MINUTES) {
       const timeUntilResetMinutes = RATING_COOLDOWN_MINUTES - timeDiffMinutes || 1;
 
