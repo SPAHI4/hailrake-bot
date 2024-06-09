@@ -1,0 +1,61 @@
+{
+  "name": "hailrake-bot",
+  "engines": {
+    "node": "22"
+  },
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file=.env dist/app/bin/bot.js",
+    "js": "node --watch --env-file=.env",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest",
+    "check-types": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "**/*.{js,json,yml,yaml}": [
+      "prettier --write"
+    ],
+    "**/*.{ts}": [
+      "eslint --cache --fix"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/lodash": "^4.17.5",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20.14.2",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.22.6",
+    "eslint": "^9.4.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "eslint-plugin-import": "^2.29.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
+    "prettier": "^3.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.0.0-alpha.29",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "drizzle-orm": "^0.31.2",
+    "envalid": "^8.0.0",
+    "lodash-es": "^4.17.21",
+    "numeralize-ru": "^2.0.0",
+    "postgres": "^3.4.4",
+    "telegraf": "^4.16.3",
+    "telegraf-ratelimit": "^2.0.0"
+  }
+}
