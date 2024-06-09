@@ -1,7 +1,7 @@
 {
   "name": "hailrake-bot",
   "engines": {
-    "node": "22"
+    "node": "^20.x"
   },
   "version": "1.0.0",
   "description": "",
@@ -9,6 +9,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file=.env dist/app/bin/app.js",
+    "start": "node dist/app/bin/app.js",
     "build": "node --loader ts-node/esm scripts/build.ts",
     "js": "node --watch --env-file=.env",
     "db:studio": "drizzle-kit studio",
