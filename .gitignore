@@ -104,7 +104,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Docusaurus cache and generated files
 .docusaurus
@@ -134,10 +133,8 @@ dist
 !vitest.config.ts
 *.d.ts
 node_modules
-dist
 .npmrc
 .yarnrc
-.eslintcache
 
 # CDK asset staging directory
 .cdk.staging
