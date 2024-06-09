@@ -1,15 +1,25 @@
 import { Telegraf } from 'telegraf';
 
-import { env } from '../config/env.js';
-import { db } from '../infra/drizzle.js';
-import { UserRepository } from '../infra/repo/UserRepository.js';
-import { RatingCommand } from '../commands/rating/RatingCommand.js';
+import { env } from './config/env.js';
+import { db } from './infra/drizzle.js';
+import { UserRepository } from './infra/repo/UserRepository.js';
+import { RatingCommand } from './commands/rating/RatingCommand.js';
 
-const bot = new Telegraf(env.BOT_TOKEN);
+export const bot = new Telegraf(env.BOT_TOKEN, {
+  handlerTimeout: 0,
+});
 
-console.log('Bot starting...');
+console.log('123 Bot starting...');
+
+bot.use((ctx, next) => {
+  console.log('USE:', ctx.update);
+
+  return next();
+});
 
 bot.hears(RatingCommand.TRIGGERS, async (ctx) => {
+  console.log('Received update in HEARS:', ctx.update);
+
   await db.transaction(
     async (tx) => {
       if (!ctx.message.reply_to_message?.from) {
@@ -36,13 +46,3 @@ bot.hears(RatingCommand.TRIGGERS, async (ctx) => {
     },
   );
 });
-
-process.once('SIGINT', () => {
-  bot.stop('SIGINT');
-});
-
-process.once('SIGTERM', () => {
-  bot.stop('SIGTERM');
-});
-
-void bot.launch();
