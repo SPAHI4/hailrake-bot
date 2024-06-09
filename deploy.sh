@@ -1,4 +1,4 @@
-pnpm build
+pnpm build-aws
 
 cp package.json build/
 
