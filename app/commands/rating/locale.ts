@@ -4,6 +4,8 @@ import { sample as rand } from 'lodash-es';
 import { formatNumbers as num } from '../../utils.js';
 import { Dictionary } from '../../Dictionary.js';
 
+import { RATING_CHANCE_DAEDALUS, RATING_CHANCE_VANGUARD } from './constants.js';
+
 interface VoteResultPlaceholders {
   oldRaterRating: number;
   newRaterRating: number;
@@ -25,6 +27,10 @@ export const t = {
   votedPositive: (p: VoteResultPlaceholders) =>
     num`<i>${p.raterName}</i> (${p.oldRaterRating}) дал 💲 <b>рофланкойн</b> <i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
 
+  votedPositiveMekansm: (p: VoteResultPlaceholders) =>
+    num`Бонус 30% к рейтингу от Mekansm:
+<i>${p.raterName}</i> (${p.oldRaterRating}) дал 💲 <b>рофланкойн</b> <i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
+
   votedNegative: (p: VoteResultPlaceholders) =>
     num`<i>${p.raterName}</i> (${p.oldRaterRating}) залил соляры <i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
 
@@ -32,6 +38,18 @@ export const t = {
     num`Blademail отразил минуса:
 
 <i>${p.raterName}</i>  (${p.oldRaterRating} → <b>${p.newRaterRating}</b>)
+<i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
+
+  votedNegativeVanuard: (p: VoteResultPlaceholders) =>
+    num`Vanguard заблокировал ${RATING_CHANCE_VANGUARD * 100}% урона:
+
+<i>${p.raterName}</i> (${p.oldRaterRating} → <b>${p.newRaterRating}</b>)
+<i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
+
+  votedNegativeDaedalus: (p: VoteResultPlaceholders) =>
+    num`НЫА! Крит на ${RATING_CHANCE_DAEDALUS * 100}%:
+
+<i>${p.raterName}</i> (${p.oldRaterRating} → <b>${p.newRaterRating}</b>)
 <i>${p.rateeName}</i> (${p.oldRateeRating} → <b>${p.newRateeRating}</b>)`,
 
   selfVoteErrorPositive: () => `найс трай, очередняра`,

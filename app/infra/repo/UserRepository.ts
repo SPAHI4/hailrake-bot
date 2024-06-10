@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 
 import { db as appDb } from '../drizzle.js';
 import { User } from '../../domain/entities/User.js';
@@ -25,18 +25,29 @@ export class UserRepository extends DrizzleRepository<User> {
     return new User(user);
   }
 
+  async findTopRating(chatId: number): Promise<User[]> {
+    const result = await this.db.query.users.findMany({
+      where: eq(users.chatId, chatId),
+      orderBy: desc(users.rating),
+    });
+
+    return result.map((user) => new User(user));
+  }
+
   async insert(entity: User): Promise<void> {
     await this.db.insert(users).values(entity);
   }
 
   async updateBatch(entities: User[]): Promise<void> {
     await Promise.all(
-      entities.map((user) =>
-        this.db
+      entities.map((user) => {
+        user.updatedAt = new Date();
+
+        return this.db
           .update(users)
           .set(user)
-          .where(and(eq(users.id, user.id), eq(users.chatId, user.chatId))),
-      ),
+          .where(and(eq(users.id, user.id), eq(users.chatId, user.chatId)));
+      }),
     );
   }
 

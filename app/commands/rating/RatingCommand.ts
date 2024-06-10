@@ -12,7 +12,11 @@ import { TelegramResponse } from '../TelegramResponse.js';
 
 import {
   RATING_CHANCE_BLADEMAIL,
+  RATING_CHANCE_DAEDALUS,
+  RATING_CHANCE_MEKANSM,
+  RATING_CHANCE_VANGUARD,
   RATING_COOLDOWN_MINUTES,
+  RATING_CRIT_MULTIPLIER,
   RATING_NEGATIVE_ADJUST_MULTIPLIER_FOR_RATER,
   RATING_NEGATIVE_TRIGGERS,
   RATING_POSITIVE_ADJUST_MULTIPLIER_FOR_RATER,
@@ -41,6 +45,32 @@ export class RatingCommand {
   // handle bonuses
   // blademail: returns 100% of the damage taken to the attacker (user who voted negative), chance 50%
   // vanguard: reduces the damage taken by 30%
+  // mekansm: heals votee by 30% additional rating
+
+  handlePositiveSpells(userFrom: User, userTo: User) {
+    const oldRaterRating = userFrom.rating;
+    const oldRateeRating = userTo.rating;
+
+    // mekansm
+    if (Math.random() < RATING_CHANCE_MEKANSM) {
+      userTo.rating += userFrom.rateAmount * 1.3;
+      userFrom.rating -= userFrom.rateAmount * RATING_POSITIVE_ADJUST_MULTIPLIER_FOR_RATER;
+
+      return new ImageResponse(
+        'dota2/mekansm.png',
+        t.votedPositiveMekansm({
+          oldRaterRating,
+          newRaterRating: userFrom.rating,
+          oldRateeRating,
+          newRateeRating: userTo.rating,
+          raterName: userFrom.displayName,
+          rateeName: userTo.displayName,
+        }),
+      );
+    }
+
+    return null;
+  }
 
   handleNegativeSpells(userFrom: User, userTo: User) {
     const oldRaterRating = userFrom.rating;
@@ -54,6 +84,42 @@ export class RatingCommand {
       return new ImageResponse(
         'dota2/blademail.png',
         t.votedNegativeBlademail({
+          oldRaterRating,
+          newRaterRating: userFrom.rating,
+          oldRateeRating,
+          newRateeRating: userTo.rating,
+          raterName: userFrom.displayName,
+          rateeName: userTo.displayName,
+        }),
+      );
+    }
+
+    // vanguard
+    if (Math.random() < RATING_CHANCE_VANGUARD) {
+      userFrom.rating -= userFrom.rateAmount * RATING_NEGATIVE_ADJUST_MULTIPLIER_FOR_RATER;
+      userTo.rating -= userFrom.rateAmount * 0.7;
+
+      return new ImageResponse(
+        'dota2/vanguard.png',
+        t.votedNegativeVanuard({
+          oldRaterRating,
+          newRaterRating: userFrom.rating,
+          oldRateeRating,
+          newRateeRating: userTo.rating,
+          raterName: userFrom.displayName,
+          rateeName: userTo.displayName,
+        }),
+      );
+    }
+
+    // daedalus
+    if (Math.random() < RATING_CHANCE_DAEDALUS) {
+      userFrom.rating -= userFrom.rateAmount * RATING_NEGATIVE_ADJUST_MULTIPLIER_FOR_RATER;
+      userTo.rating -= userFrom.rateAmount * RATING_CRIT_MULTIPLIER;
+
+      return new ImageResponse(
+        'dota2/daedalus.png',
+        t.votedNegativeDaedalus({
           oldRaterRating,
           newRaterRating: userFrom.rating,
           oldRateeRating,
@@ -110,17 +176,18 @@ export class RatingCommand {
   }
 
   private async vote(userFrom: User, userTo: User, type: 'positive' | 'negative') {
-    this.handleCooldown(userFrom);
-
-    // check if user has enough rating
-    if (userFrom.rating < RATING_REQUIRED_TO_VOTE) {
-      throw new CommandError(t.ratingNotEnough({ rating: RATING_REQUIRED_TO_VOTE }));
-    }
-
     // give vote
     userFrom.votedAt = new Date();
 
     if (type === 'positive') {
+      const spellsResult = this.handlePositiveSpells(userFrom, userTo);
+
+      if (spellsResult) {
+        await this.userRepository.updateBatch([userFrom, userTo]);
+
+        return spellsResult;
+      }
+
       return this.handlePositive(userFrom, userTo);
     } else {
       // negative
@@ -155,6 +222,13 @@ export class RatingCommand {
         this.userRepository.upsertFromTelegramUser(userFrom, chat),
         this.userRepository.upsertFromTelegramUser(userTo, chat),
       ]);
+
+      this.handleCooldown(rater);
+
+      // check if user has enough rating
+      if (rater.rating < RATING_REQUIRED_TO_VOTE) {
+        throw new CommandError(t.ratingNotEnough({ rating: RATING_REQUIRED_TO_VOTE }));
+      }
 
       return await this.vote(rater, ratee, voteType);
     } catch (error: unknown) {

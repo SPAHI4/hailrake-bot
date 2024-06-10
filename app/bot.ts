@@ -7,6 +7,8 @@ import { RatingCommand } from './commands/rating/RatingCommand.js';
 import { ImageResponse } from './commands/ImageResponse.js';
 import { HtmlResponse } from './commands/HtmlResponse.js';
 import { CasinoCommand } from './commands/casino/CasinoCommand.js';
+import { TopRatingCommand } from './commands/rating/TopRatingCommand.js';
+import { ConfigsCommand } from './commands/ConigsCommand.js';
 
 export const bot = new Telegraf(env.BOT_TOKEN);
 
@@ -87,6 +89,30 @@ bot.command(['casino', 'azino777'], async (ctx) => {
     });
     // }
   }
+});
+
+bot.command('topladder', async (ctx) => {
+  console.log('Received update in TOP LADDER:', ctx.update);
+
+  const userRepository = new UserRepository(db);
+
+  const ratingCommand = new TopRatingCommand(userRepository);
+
+  const response = await ratingCommand.execute(ctx.message.from, ctx.message.chat);
+
+  await ctx.replyWithHTML(response.getPayload(), {
+    // @ts-expect-error reply_to_message_id actually exists
+    reply_to_message_id: ctx.message.message_id,
+  });
+});
+
+bot.command('configs', async (ctx) => {
+  const response = new ConfigsCommand().execute();
+
+  await ctx.replyWithHTML(response.getPayload(), {
+    // @ts-expect-error reply_to_message_id actually exists
+    reply_to_message_id: ctx.message.message_id,
+  });
 });
 
 // TODO: handle reactions, probably save every message to the database

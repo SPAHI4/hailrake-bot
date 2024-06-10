@@ -10,6 +10,7 @@ const images = [
   'dota2/multicast_x4.webp',
   'dota2/ogre_magi.png',
   'dota2/vanguard.png',
+  'dota2/mekansm.png',
 ] as const;
 
 export class ImageResponse extends TelegramResponse {

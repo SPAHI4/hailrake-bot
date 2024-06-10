@@ -13,6 +13,7 @@ import {
   CASINO_DEFAULT_BET,
   CASINO_DELAY_FIRST_SECONDS,
   CASINO_DELAY_SECOND_SECONDS,
+  CASINO_MULTICAST_CHANCE,
   CASINO_REQUIRED_RATING,
   CASINO_VABANK_TRIGGERS,
   CASINO_WIN_CHANCE,
@@ -54,7 +55,7 @@ export class CasinoCommand {
     const maxBet = Math.floor(user.rating * 0.33);
 
     if (betArg && CASINO_VABANK_TRIGGERS.includes(betArg)) {
-      return maxBet;
+      return Math.max(CASINO_DEFAULT_BET, maxBet);
     }
 
     const bet = Math.abs(Math.round(Number(betArg)));
@@ -92,10 +93,15 @@ export class CasinoCommand {
   async *execute(text: string, tgUser: TelegramUser, chat: TelegramAbstractChat) {
     const user = await this.userRepository.upsertFromTelegramUser(tgUser, chat);
 
+    const [_, maxTextOrBetAmount = null] = text.split(' ');
+    let userBet;
+
     try {
       this.checkCooldown(user);
 
       this.checkRating(user);
+
+      userBet = this.calculateBet(user, maxTextOrBetAmount);
     } catch (error: unknown) {
       if (error instanceof CommandError) {
         yield new HtmlResponse(error.message);
@@ -106,21 +112,30 @@ export class CasinoCommand {
       throw error;
     }
 
-    const [_, betArg = null] = text.split(' ');
-    const bet = this.calculateBet(user, betArg);
-
     await this.updateUser(user); // update last played time now
 
-    yield new HtmlResponse(t.start({ bet }));
+    yield new HtmlResponse(t.start({ bet: userBet }));
 
     await sleep(CASINO_DELAY_FIRST_SECONDS * 1000);
 
-    yield new HtmlResponse(t.beforeResult());
+    // yield new HtmlResponse(t.beforeResult());
 
-    await sleep(CASINO_DELAY_SECOND_SECONDS * 1000);
+    // await sleep(CASINO_DELAY_SECOND_SECONDS * 1000);
 
     const isWin = Math.random() < CASINO_WIN_CHANCE;
 
-    yield await this.handleResult(user, isWin, bet);
+    let multiplier = 1;
+
+    while (Math.random() < CASINO_MULTICAST_CHANCE) {
+      multiplier += 1;
+
+      await sleep(CASINO_DELAY_SECOND_SECONDS * 1000);
+
+      yield new HtmlResponse(t.multicast({ x: multiplier }));
+    }
+
+    const totalBet = userBet * multiplier;
+
+    yield await this.handleResult(user, isWin, totalBet);
   }
 }
